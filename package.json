@@ -1,0 +1,32 @@
+{
+  "name": "website-builder-server",
+  "version": "1.0.0",
+  "description": "This is a fully fledged server for an AI website build project , the backend is completely industrial standard and based on advanced AI and MERN architcture",
+  "license": "ISC",
+  "author": "Anubhaw Kumar Gupta",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@google/genai": "^2.8.0",
+    "bcryptjs": "^3.0.3",
+    "cohere-ai": "^8.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.6.3",
+    "stripe": "^22.2.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
