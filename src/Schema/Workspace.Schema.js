@@ -104,8 +104,7 @@ const workspaceSchema = new mongoose.Schema({
 // Guarantees a single user cannot create duplicate workspace URL slugs
 workspaceSchema.index({ ownerId: 1, slug: 1 }, { unique: true });
 
-// Pre-save hook middleware to auto-generate basic standard URL slugs from workspace name
-workspaceSchema.pre('validate', function (next) {
+workspaceSchema.pre('validate', function () {
   if (this.name && (!this.slug || this.isModified('name'))) {
     this.slug = this.name
       .toString()
@@ -114,7 +113,6 @@ workspaceSchema.pre('validate', function (next) {
       .replace(/[\s\W-]+/g, '-') // Replaces spaces and special chars with a clean dash '-'
       .replace(/^-+|-+$/g, '');  // Trims leading/trailing dashes
   }
-  next();
 });
 
 const Workspace = mongoose.model('Workspace', workspaceSchema);

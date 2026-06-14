@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import User from '../Schema/User.Schema.js';
 import Workspace from '../Schema/Workspace.Schema.js';
 import Subscription from '../Schema/Subscription.Schema.js';
@@ -138,6 +139,36 @@ export const logoutUser = asyncHandler(async (req, res, next) => {
   return res.status(200).json(
     new SuccessResponse(200, null, 'Logged out successfully')
   );
+});
+
+// 3b. REFRESH SESSION TOKEN
+export const refreshSession = asyncHandler(async (req, res, next) => {
+  const refreshToken = req.cookies?.refreshToken;
+
+  if (!refreshToken) {
+    throw new ApiError(401, 'Refresh token is missing');
+  }
+
+  try {
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET || 'refresh_token_secret_key');
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      throw new ApiError(404, 'User not found');
+    }
+
+    // Generate new access token
+    const newAccessToken = generateAccessToken(user._id);
+
+    // Set new cookie
+    res.cookie('token', newAccessToken, getAccessTokenCookieOptions());
+
+    return res.status(200).json(
+      new SuccessResponse(200, { user }, 'Session refreshed successfully')
+    );
+  } catch (error) {
+    throw new ApiError(401, 'Invalid or expired refresh token');
+  }
 });
 
 // 4. FETCH CURRENT USER PROFILE

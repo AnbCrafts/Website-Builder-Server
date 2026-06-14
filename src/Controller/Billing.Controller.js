@@ -279,3 +279,40 @@ export const stripeWebhookHandler = async (req, res) => {
     res.status(500).json({ error: 'Webhook processing error', details: error.message });
   }
 };
+
+// 5. MOCK SUBSCRIPTION ACTIVATION FOR TESTING
+export const mockActivateSubscription = asyncHandler(async (req, res, next) => {
+  const { plan } = req.body;
+  const userId = req.user._id;
+
+  if (!plan) {
+    throw new ApiError(400, 'Billing plan tier is required');
+  }
+
+  // Ensure plan is valid
+  if (!['free', 'basic', 'premium', 'agency'].includes(plan)) {
+    throw new ApiError(400, `Unsupported plan tier: ${plan}`);
+  }
+
+  const userSub = await Subscription.findOneAndUpdate(
+    { userId },
+    {
+      plan,
+      status: 'active',
+      currentPeriodStart: new Date(),
+      currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+      cancelAtPeriodEnd: false
+    },
+    { new: true, upsert: true }
+  );
+
+  return res.status(200).json(
+    new SuccessResponse(200, {
+      plan: userSub.plan,
+      status: userSub.status,
+      currentPeriodStart: userSub.currentPeriodStart,
+      currentPeriodEnd: userSub.currentPeriodEnd,
+      cancelAtPeriodEnd: userSub.cancelAtPeriodEnd
+    }, 'Mock subscription activated successfully')
+  );
+});

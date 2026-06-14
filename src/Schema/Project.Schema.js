@@ -131,11 +131,11 @@ const projectSchema = new mongoose.Schema({
   currentCode: {
     type: String,
     required: [true, 'Current code state template is required'],
-    default: '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n</head>\n<body>\n</body>\n</html>'
+    default: '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <script src="https://cdn.tailwindcss.com"></script>\n  <style>\n    /* Custom CSS Stylesheet */\n    body {\n      background-color: #0A0A0C;\n      color: #FFFFFF;\n      font-family: sans-serif;\n    }\n  </style>\n</head>\n<body class="bg-[#0A0A0C] text-white min-h-screen flex items-center justify-center">\n  <div class="p-8 max-w-md text-center space-y-4 border border-gray-900 bg-[#111318]/40 backdrop-blur-md rounded-2xl">\n    <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-500">Nirman.AI Sandbox</h1>\n    <p class="text-xs text-gray-500 font-mono uppercase tracking-wider">compiler node ready</p>\n    <p class="text-xs text-gray-400 leading-relaxed">Send an AI Pilot message on the right to generate your website layout, or write custom HTML/CSS/JS directly in the Monaco editor.</p>\n  </div>\n  <script>\n    // Custom JavaScript Logic\n    console.log(\'Nirman.AI Sandbox Node Initialized Successfully.\');\n  </script>\n</body>\n</html>'
   },
   status: {
     type: String,
-    enum: ['idle', 'generating', 'compiling', 'auditing', 'completed', 'failed'],
+    enum: ['idle', 'planning', 'generating', 'compiling', 'auditing', 'completed', 'failed'],
     default: 'idle'
   },
   visibility: {
@@ -151,6 +151,17 @@ const projectSchema = new mongoose.Schema({
   settings: {
     type: projectSettingsSchema,
     default: () => ({ theme: 'dark', framework: 'TailwindCSS + GSAP Core', enableAiAutosave: true })
+  },
+  pipelineState: {
+    currentStage: { 
+      type: String, 
+      enum: ['idle', 'planning', 'architecting', 'copywriting', 'assets', 'synthesis', 'validating', 'fixing', 'scoring', 'completed', 'failed'],
+      default: 'idle' 
+    },
+    percentage: { type: Number, default: 0 },
+    stageLogs: { type: String, default: '' },
+    blueprint: { type: mongoose.Schema.Types.Mixed, default: null },
+    content: { type: mongoose.Schema.Types.Mixed, default: null }
   }
 }, {
   timestamps: true,

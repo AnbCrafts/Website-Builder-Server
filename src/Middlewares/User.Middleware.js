@@ -24,7 +24,7 @@ export const authenticateUser = async (req, res, next) => {
       return res.status(401).json({ error: 'Access Denied', message: 'Authentication token is missing' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key');
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || 'access_token_secret_key');
     
     const user = await User.findById(decoded.id);
     if (!user) {

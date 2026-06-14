@@ -7,7 +7,8 @@ import {
   updateProject,
   auditProject,
   rollbackProject,
-  deleteProject
+  deleteProject,
+  streamProjectGenerationProgress
 } from '../Controller/Project.Controller.js';
 import { authenticateUser } from '../Middlewares/User.Middleware.js';
 import { verifyWorkspaceAccess } from '../Middlewares/Workspace.Middleware.js';
@@ -45,6 +46,7 @@ const rollbackSchema = {
 // Project Endpoint Routes
 ProjectRouter.post('/projects', authenticateUser, verifyWorkspaceAccess(['admin', 'editor']), validateFields(createProjectSchema), createProject);
 ProjectRouter.post('/projects/:projectId/generate', authenticateUser, aiGenerationRateLimiter, checkSubscriptionTier('free'), verifyProjectAccess(['admin', 'editor']), validateFields(generatePromptSchema), generateProject);
+ProjectRouter.get('/projects/:projectId/generation-stream', authenticateUser, verifyProjectAccess(['admin', 'editor', 'viewer']), streamProjectGenerationProgress);
 ProjectRouter.get('/projects/workspace/:workspaceId', authenticateUser, verifyWorkspaceAccess(['admin', 'editor', 'viewer']), getWorkspaceProjects);
 ProjectRouter.get('/projects/:projectId', authenticateUser, verifyProjectAccess(['admin', 'editor', 'viewer']), getProject);
 ProjectRouter.put('/projects/:projectId', authenticateUser, verifyProjectAccess(['admin', 'editor']), validateFields(updateCodeSchema), updateProject);

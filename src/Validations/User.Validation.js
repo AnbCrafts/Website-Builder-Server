@@ -8,6 +8,7 @@ export const userValidationSchema = z.object({
   avatarUrl: z.string().url('Avatar URL must be a valid URL').or(z.string().max(0)).optional(),
   workspaces: z.array(z.string()).optional(),
   currentWorkspace: z.string().nullable().optional(),
+  workspaceId: z.string().min(1).optional(),
   isVerified: z.boolean().optional(),
   role: z.enum(['user', 'admin']).optional()
 });

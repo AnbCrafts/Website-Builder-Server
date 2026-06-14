@@ -3,6 +3,7 @@ import {
   registerUser,
   loginUser,
   logoutUser,
+  refreshSession,
   getUserProfile,
   verifyEmail,
   updateProfile,
@@ -43,6 +44,7 @@ const switchWorkspaceSchema = {
 UserRouter.post('/auth/register', globalRateLimiter, validateFields(registerSchema), registerUser);
 UserRouter.post('/auth/login', globalRateLimiter, validateFields(loginSchema), loginUser);
 UserRouter.post('/auth/logout', authenticateUser, logoutUser);
+UserRouter.post('/auth/refresh', refreshSession);
 UserRouter.get('/auth/me', authenticateUser, getUserProfile);
 UserRouter.post('/auth/verify-email', globalRateLimiter, authenticateUser, verifyEmail);
 

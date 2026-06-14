@@ -54,7 +54,7 @@ export const projectValidationSchema = z.object({
   }).optional(),
 
   // Fields for dynamic field validation of create, generate, update, and rollback requests
-  description: z.string().max(250, 'Description cannot exceed 250 characters').trim().optional(),
+  description: z.string().max(5000, 'Description cannot exceed 5000 characters').trim().optional(),
   prompt: z.string().trim().optional(),
   theme: z.enum(['dark', 'light']).optional(),
   framework: z.string().optional(),

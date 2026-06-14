@@ -98,13 +98,27 @@ The system integrates directly with **Stripe** to govern feature access based on
 
 ## 🤖 Advanced AI Capabilities
 
-1. **Multi-Agent Gemini Orchestrator**:
-   * Takes a single natural language description.
-   * Prompts specialized agents: *Layout Architect* (Tailwind grid construction), *Copywriter* (contextual messaging), and *Illustrator* (Unsplash keyword-matching links).
-   * Generates a fully working single-page application and registers version history.
-2. **Design Auditor**:
-   * Passes compiled code blocks to Gemini to review design standards.
-   * Compiles and returns a score (0-100) alongside structured accessibility and SEO recommendations.
+### 1. 9-Stage Multi-Agent Orchestrator (`runAgentPipeline`)
+Every generation request executes asynchronously in the background as a chain of 9 specialized agent tasks, updating the database state at each phase:
+*   **AI Product Planner**: Builds the initial website outline, sitemap sections, and target audience blueprint (JSON).
+*   **Design Architect**: Determines font pairings (Google Fonts) and HSL responsive color palettes.
+*   **Content Strategist**: Drafts custom, descriptive marketing copywriting blocks tailored to the sitemap sections.
+*   **Asset Preloader**: Generates visual keywords and queries the Unsplash CDN database to preload high-resolution media.
+*   **Layout Architect**: Generates a unified responsive single-page HTML codebase using Tailwind CSS, GSAP, and icon links.
+*   **Build Validator**: Audits compiled markup structure checking tag completeness and broken style definitions.
+*   **Auto-Fix Agent**: Applies code refactoring to compile fixes if structural validator warnings exist.
+*   **Design Critic**: Scores layouts across SEO, Design, Accessibility, and Responsiveness out of 100.
+*   **System Deployer**: Persists final codebase, builds the version snapshot array, and signals completion.
+
+### 2. Live SSE Telemetry Stream (`/api/projects/:projectId/generation-stream`)
+Rather than keeping an HTTP REST thread open (risking browser timeout crashes during the 15-45s build duration), the server immediately returns a `202 Accepted` status and boots the orchestrator in the background. It utilizes **Server-Sent Events (SSE)** to stream real-time JSON logging, percentage markers, structural blueprints, and color swatches directly to client connections.
+
+### 3. Rate-Limit Retry Backoff Protection
+To handle API rate-limit spikes on free tiers (HTTP 429), the server-side fetch wrapper `generateAI` implements **automatic request retries with exponential backoff**. If a rate limit or transient network error occurs, the pipeline pauses, reads the `retry-after` header delay (or uses a scaling delay `3s -> 6s -> 12s...`), and automatically retries the API query up to 4 times before throwing an error.
+
+### 4. Multimodal Design Auditor
+Users can trigger manual layout checks. The backend passes HTML code blocks to Gemini to audit standard WCAG accessibility rules, visual readability spacing, and color contrast ratios, exporting compliance reports directly to the database.
+
 
 ---
 
